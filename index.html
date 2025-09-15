@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Ukubona Pentad — Σ as Matrix</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root{ --bg:#0b1020; --ink:#e8eef6; --dim:#9fb0c3; --blue:#7cc0ff; --green:#8df0c4; --line:#22324a; --diag:#1c2a42; --off:#0f1a31; }
+  *{ box-sizing:border-box }
+  body{ margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial }
+  .page{ max-width:1100px; margin:auto; padding:28px 18px 80px; display:grid; gap:20px }
+  h1{ font-size:20px; margin:0 0 12px }
+  .grid{ display:grid; grid-template-columns: 1.2fr 1fr; gap:20px }
+  .card{ background:#0e1730; border:1px solid var(--line); border-radius:14px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,.25) }
+  .muted{ color:var(--dim) }
+  /* Pentad ring */
+  .pentad{ position:relative; height:440px; }
+  .node{ position:absolute; width:160px; text-align:center; padding:8px 10px; border:1px solid var(--line); border-radius:12px; background:#0f1e3b }
+  .node b{ color:var(--blue) }
+  .n-theta{ top:6px; left:50%; transform:translateX(-50%) }
+  .n-sigma{ top:110px; right:18px }
+  .n-ht{ bottom:28px; right:100px }
+  .n-ds{ bottom:28px; left:100px }
+  .n-tp{ top:110px; left:18px }
+  .arrow{ position:absolute; border-top:1px dashed var(--line); opacity:.9 }
+  .a1{ top:80px; left:56%; width:32%; transform:rotate(8deg); }
+  .a2{ top:74%; left:64%; width:16%; transform:rotate(60deg); }
+  .a3{ bottom:90px; left:20%; width:60%; }
+  .a4{ top:74%; left:20%; width:16%; transform:rotate(-60deg); }
+  .a5{ top:80px; left:12%; width:32%; transform:rotate(-8deg); }
+  .legend{ display:flex; gap:16px; align-items:center; flex-wrap:wrap; font-size:13px; margin-top:8px }
+  .sw{ width:12px; height:12px; border-radius:3px; display:inline-block; margin-right:6px; border:1px solid var(--line) }
+  .sw-var{ background:var(--diag) }
+  .sw-cov{ background:var(--off) }
+  /* Sigma matrix */
+  .sigma-wrap{ display:grid; grid-template-columns: 1fr; gap:12px }
+  .sigma-matrix{ display:grid; grid-template-columns: repeat(5, 56px); width:max-content; border:1px solid var(--line); border-radius:12px; overflow:hidden }
+  .cell{ width:56px; height:48px; display:flex; align-items:center; justify-content:center; font-variant-numeric: tabular-nums; position:relative; }
+  .cell.diag{ background:var(--diag); color:var(--green); font-weight:600 }
+  .cell.offd{ background:var(--off); color:#bfe0ff }
+  .cell:not(:nth-child(-n+5)){ border-top:1px solid #16233c }
+  .cell:not(:nth-child(5n+1)){ border-left:1px solid #16233c }
+  .lbl{ font-size:13px; color:var(--dim) }
+  .sigma-notes{ font-size:13px; color:var(--dim); line-height:1.45 }
+  .tip{ font-size:12px; color:#bfe8ff; margin-top:6px }
+  /* tiny tooltip */
+  .cell[data-tip]:hover::after{
+    content:attr(data-tip);
+    position:absolute; bottom:100%; transform:translateY(-6px);
+    background:#101f3e; color:var(--ink); border:1px solid var(--line);
+    padding:6px 8px; border-radius:8px; font-size:12px; white-space:nowrap;
+    box-shadow:0 8px 20px rgba(0,0,0,.35);
+  }
+  .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="grid">
+      <section class="card">
+        <h1>Ukubona Pentad</h1>
+        <div class="pentad">
+          <div class="node n-theta"><b>θ</b><br>Parameters of <i>conflict</i><br><span class="muted">adversarial baseline</span></div>
+          <div class="node n-sigma"><b>Σ</b><br><span class="muted">Structure</span><br>variance = <i>transaction</i><br>covariance = <i>cooperation</i></div>
+          <div class="node n-ht"><b>h(t) ≡ Okukona</b><br>collision / play / shocks<br><span class="muted">synchronicity in time×space</span></div>
+          <div class="node n-ds"><b>ΔS</b><br>ledger of survival<br><span class="muted">scar / gap</span></div>
+          <div class="node n-tp"><b>θ′</b><br>Nietzschean update<br><span class="muted">Aeschylean writing</span></div>
+          <div class="arrow a1"></div>
+          <div class="arrow a2"></div>
+          <div class="arrow a3"></div>
+          <div class="arrow a4"></div>
+          <div class="arrow a5"></div>
+        </div>
+        <div class="legend">
+          <span><span class="sw sw-var"></span>variance = <b>transaction</b></span>
+          <span><span class="sw sw-cov"></span>covariance = <b>cooperation</b></span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h1>Σ as Matrix (transactions & cooperation)</h1>
+        <div class="sigma-wrap">
+          <!-- 5×5 example matrix; diagonal = variance (transactions), off-diagonal = covariance (cooperation) -->
+          <div class="sigma-matrix mono" aria-label="Sigma variance–covariance matrix">
+            <!-- Row 1 -->
+            <div class="cell diag" data-tip="Var(A) — transaction of A">σ<sub>AA</sub></div>
+            <div class="cell offd" data-tip="Cov(A,B) — cooperation A↔B">σ<sub>AB</sub></div>
+            <div class="cell offd" data-tip="Cov(A,C) — cooperation A↔C">σ<sub>AC</sub></div>
+            <div class="cell offd" data-tip="Cov(A,D) — cooperation A↔D">σ<sub>AD</sub></div>
+            <div class="cell offd" data-tip="Cov(A,E) — cooperation A↔E">σ<sub>AE</sub></div>
+            <!-- Row 2 -->
+            <div class="cell offd" data-tip="Cov(B,A) — cooperation B↔A">σ<sub>BA</sub></div>
+            <div class="cell diag" data-tip="Var(B) — transaction of B">σ<sub>BB</sub></div>
+            <div class="cell offd" data-tip="Cov(B,C) — cooperation B↔C">σ<sub>BC</sub></div>
+            <div class="cell offd" data-tip="Cov(B,D) — cooperation B↔D">σ<sub>BD</sub></div>
+            <div class="cell offd" data-tip="Cov(B,E) — cooperation B↔E">σ<sub>BE</sub></div>
+            <!-- Row 3 -->
+            <div class="cell offd" data-tip="Cov(C,A) — cooperation C↔A">σ<sub>CA</sub></div>
+            <div class="cell offd" data-tip="Cov(C,B) — cooperation C↔B">σ<sub>CB</sub></div>
+            <div class="cell diag" data-tip="Var(C) — transaction of C">σ<sub>CC</sub></div>
+            <div class="cell offd" data-tip="Cov(C,D) — cooperation C↔D">σ<sub>CD</sub></div>
+            <div class="cell offd" data-tip="Cov(C,E) — cooperation C↔E">σ<sub>CE</sub></div>
+            <!-- Row 4 -->
+            <div class="cell offd" data-tip="Cov(D,A) — cooperation D↔A">σ<sub>DA</sub></div>
+            <div class="cell offd" data-tip="Cov(D,B) — cooperation D↔B">σ<sub>DB</sub></div>
+            <div class="cell offd" data-tip="Cov(D,C) — cooperation D↔C">σ<sub>DC</sub></div>
+            <div class="cell diag" data-tip="Var(D) — transaction of D">σ<sub>DD</sub></div>
+            <div class="cell offd" data-tip="Cov(D,E) — cooperation D↔E">σ<sub>DE</sub></div>
+            <!-- Row 5 -->
+            <div class="cell offd" data-tip="Cov(E,A) — cooperation E↔A">σ<sub>EA</sub></div>
+            <div class="cell offd" data-tip="Cov(E,B) — cooperation E↔B">σ<sub>EB</sub></div>
+            <div class="cell offd" data-tip="Cov(E,C) — cooperation E↔C">σ<sub>EC</sub></div>
+            <div class="cell offd" data-tip="Cov(E,D) — cooperation E↔D">σ<sub>ED</sub></div>
+            <div class="cell diag" data-tip="Var(E) — transaction of E">σ<sub>EE</sub></div>
+          </div>
+
+          <div class="sigma-notes">
+            Diagonal (<b>Var</b>) marks <i>transactions</i>; off-diagonals (<b>Cov</b>) mark <i>cooperation</i>.
+            Cooperation is modeled as improbable <b>synchronicity</b> inside the adversarial baseline (θ).
+            Collisions at <b>h(t)</b> stress this structure; the resulting <b>ΔS</b> gets written into <b>θ′</b>.
+          </div>
+          <div class="tip">Tip: rename A–E to your agents/cohorts (e.g., Donor, Non-donor, Firm X, Firm Y, Regulator).</div>
+        </div>
+      </section>
+    </div>
+  </div>
+</body>
+</html>
