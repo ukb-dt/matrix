@@ -6,182 +6,382 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="color-scheme" content="dark light">
 <style>
-  :root{
-    --bg:#0b1020; --ink:#e8eef6; --muted:#a7b8cc;
-    --blue:#7cc0ff; --green:#8df0c4;
-    --line:#22324a; --diag:#1c2a42; --off:#0f1a31;
+:root{
+  --bg:#0b1020;
+  --ink:#e8eef6;
+  --muted:#a7b8cc;
+  --blue:#7cc0ff;
+  --green:#8df0c4;
+  --line:#22324a;
+  --diag:#1c2a42;
+  --off:#0f1a31;
+}
+*{
+  box-sizing:border-box
+}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font:15px/1.55 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial
+}
+.page{
+  max-width:1100px;
+  margin:auto;
+  padding:28px 18px 80px;
+  display:grid;
+  gap:20px
+}
+h1{
+  font-size:20px;
+  margin:0 0 12px
+}
+h2{
+  font-size:18px;
+  margin:0 0 12px
+}
+.grid{
+  display:grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap:20px
+}
+.card{
+  background:#0e1730;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,.25)
+}
+.muted{
+  color:var(--muted)
+}
+.mono{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace
+}
+/* Pentad ring */
+.pentad{
+  position:relative;
+  width:440px;
+  height:440px;
+  margin:0 auto
+}
+.node{
+  position:absolute;
+  width:160px;
+  text-align:center;
+  padding:10px 10px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#0f1e3b;
+  line-height:1.35;
+  transform:translate(-50%, -50%)
+}
+.node b{
+  color:var(--blue)
+}
+.n-theta{
+  top:calc(50% + 160px);
+  left:50%
+}
+.n-sigma{
+  top:50%;
+  left:calc(50% - 160px)
+}
+.n-ht{
+  top:60px;
+  left:50%
+}
+.n-ds{
+  top:50%;
+  left:50%;
+  width:160px;
+  border:2px solid var(--blue);
+  background:var(--off)
+}
+.n-tp{
+  top:50%;
+  left:calc(50% + 160px)
+}
+.arrow{
+  position:absolute;
+  border-top:1px dashed var(--line);
+  opacity:.9;
+  height:0;
+  transform-origin:left center
+}
+.spoke-up{
+  top:50%;
+  left:50%;
+  width:160px;
+  transform:translateY(-50%) rotate(-90deg)
+}
+.spoke-right{
+  top:50%;
+  left:50%;
+  width:160px;
+  transform:translateY(-50%) rotate(0deg)
+}
+.spoke-down{
+  top:50%;
+  left:50%;
+  width:160px;
+  transform:translateY(-50%) rotate(90deg)
+}
+.spoke-left{
+  top:50%;
+  left:50%;
+  width:160px;
+  transform:translateY(-50%) rotate(180deg)
+}
+.feedback{
+  top:50%;
+  left:calc(50% + 160px);
+  width:226px;
+  transform:translateY(-50%) rotate(135deg)
+}
+.legend{
+  display:flex;
+  gap:16px;
+  align-items:center;
+  flex-wrap:wrap;
+  font-size:13px;
+  margin-top:8px;
+  color:var(--muted)
+}
+.sw{
+  width:12px;
+  height:12px;
+  border-radius:3px;
+  display:inline-block;
+  margin-right:6px;
+  border:1px solid var(--line)
+}
+.sw-diag{
+  background:var(--diag)
+}
+/* diagonal = cooperation (within) */
+.sw-off{
+  background:var(--off)
+}
+/* off-diagonal = transaction (between) */
+/* Sigma matrix (semantic table) */
+.sigma-wrap{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:12px
+}
+table.sigma-matrix{
+  border-collapse: separate;
+  border-spacing:0;
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow:hidden;
+  background:#0f1a31
+}
+.sigma-matrix th, .sigma-matrix td{
+  width:56px;
+  height:48px;
+  text-align:center;
+  vertical-align:middle;
+  border-left:1px solid #16233c;
+  border-top:1px solid #16233c;
+  color:#bfe0ff
+}
+.sigma-matrix thead th{
+  height:42px;
+  font-weight:600;
+  color:var(--ink);
+  background:#0e1730
+}
+.sigma-matrix th:first-child{
+  width:56px;
+  position:sticky;
+  left:0;
+  background:#0e1730;
+  border-right:1px solid #16233c
+}
+.sigma-matrix tr:first-child th, .sigma-matrix tr:first-child td{
+  border-top:none
+}
+.sigma-matrix th:first-child, .sigma-matrix td:first-child{
+  border-left:none
+}
+.cell{
+  position:relative;
+  font-variant-numeric: tabular-nums;
+  outline:none
+}
+.cell.diag{
+  background:var(--diag);
+  color:var(--green);
+  font-weight:600
+}
+/* cooperation (within) */
+.cell.offd{
+  background:var(--off)
+}
+/* transaction (between) */
+/* Accessible tooltip */
+.cell[data-tip]{
+  cursor:help
+}
+.cell[data-tip]:hover::after, .cell[data-tip]:focus-visible::after{
+  content:attr(data-tip);
+  position:absolute;
+  bottom:100%;
+  left:50%;
+  transform:translate(-50%,-6px);
+  background:#101f3e;
+  color:var(--ink);
+  border:1px solid var(--line);
+  padding:6px 8px;
+  border-radius:8px;
+  font-size:12px;
+  white-space:nowrap;
+  box-shadow:0 8px 20px rgba(0,0,0,.35);
+  z-index:2;
+}
+.cell:focus-visible{
+  box-shadow:0 0 0 2px rgba(124,192,255,.5) inset
+}
+.sigma-notes{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.45
+}
+.tip{
+  font-size:12px;
+  color:#bfe8ff;
+  margin-top:6px
+}
+/* Responsive */
+@media (max-width: 900px){
+  .grid{
+    grid-template-columns: 1fr
   }
-  *{ box-sizing:border-box }
-  body{ margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial }
-  .page{ max-width:1100px; margin:auto; padding:28px 18px 80px; display:grid; gap:20px }
-  h1{ font-size:20px; margin:0 0 12px }
-  h2{ font-size:18px; margin:0 0 12px }
-  .grid{ display:grid; grid-template-columns: 1.2fr 1fr; gap:20px }
-  .card{ background:#0e1730; border:1px solid var(--line); border-radius:14px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,.25) }
-
-  .muted{ color:var(--muted) }
-  .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace }
-
-  /* Pentad ring */
-  .pentad{ position:relative; height:440px }
-  .node{ position:absolute; width:160px; text-align:center; padding:10px 10px; border:1px solid var(--line); border-radius:12px; background:#0f1e3b; line-height:1.35 }
-  .node b{ color:var(--blue) }
-  .n-theta{ top:6px; left:50%; transform:translateX(-50%) }
-  .n-sigma{ top:110px; right:18px }
-  .n-ht{ bottom:28px; right:100px }
-  .n-ds{ bottom:28px; left:100px }
-  .n-tp{ top:110px; left:18px }
-  .arrow{ position:absolute; border-top:1px dashed var(--line); opacity:.9 }
-  .a1{ top:80px; left:56%; width:32%; transform:rotate(8deg) }
-  .a2{ top:74%; left:64%; width:16%; transform:rotate(60deg) }
-  .a3{ bottom:90px; left:20%; width:60% }
-  .a4{ top:74%; left:20%; width:16%; transform:rotate(-60deg) }
-  .a5{ top:80px; left:12%; width:32%; transform:rotate(-8deg) }
-
-  .legend{ display:flex; gap:16px; align-items:center; flex-wrap:wrap; font-size:13px; margin-top:8px; color:var(--muted) }
-  .sw{ width:12px; height:12px; border-radius:3px; display:inline-block; margin-right:6px; border:1px solid var(--line) }
-  .sw-diag{ background:var(--diag) } /* diagonal = cooperation (within) */
-  .sw-off{ background:var(--off) }   /* off-diagonal = transaction (between) */
-
-  /* Sigma matrix (semantic table) */
-  .sigma-wrap{ display:grid; grid-template-columns: 1fr; gap:12px }
-  table.sigma-matrix{ border-collapse: separate; border-spacing:0; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#0f1a31 }
-  .sigma-matrix th, .sigma-matrix td{ width:56px; height:48px; text-align:center; vertical-align:middle; border-left:1px solid #16233c; border-top:1px solid #16233c; color:#bfe0ff }
-  .sigma-matrix thead th{ height:42px; font-weight:600; color:var(--ink); background:#0e1730 }
-  .sigma-matrix th:first-child{ width:56px; position:sticky; left:0; background:#0e1730; border-right:1px solid #16233c }
-  .sigma-matrix tr:first-child th, .sigma-matrix tr:first-child td{ border-top:none }
-  .sigma-matrix th:first-child, .sigma-matrix td:first-child{ border-left:none }
-  .cell{ position:relative; font-variant-numeric: tabular-nums; outline:none }
-  .cell.diag{ background:var(--diag); color:var(--green); font-weight:600 } /* cooperation (within) */
-  .cell.offd{ background:var(--off) } /* transaction (between) */
-
-  /* Accessible tooltip */
-  .cell[data-tip]{ cursor:help }
-  .cell[data-tip]:hover::after,
-  .cell[data-tip]:focus-visible::after{
-    content:attr(data-tip);
-    position:absolute; bottom:100%; left:50%; transform:translate(-50%,-6px);
-    background:#101f3e; color:var(--ink); border:1px solid var(--line);
-    padding:6px 8px; border-radius:8px; font-size:12px; white-space:nowrap;
-    box-shadow:0 8px 20px rgba(0,0,0,.35); z-index:2;
+  .pentad{
+    height:360px;
+    width:360px
   }
-  .cell:focus-visible{ box-shadow:0 0 0 2px rgba(124,192,255,.5) inset }
-
-  .sigma-notes{ font-size:13px; color:var(--muted); line-height:1.45 }
-  .tip{ font-size:12px; color:#bfe8ff; margin-top:6px }
-
-  /* Responsive */
-  @media (max-width: 900px){
-    .grid{ grid-template-columns: 1fr }
-    .pentad{ height:360px }
-    .node{ width: clamp(120px, 35vw, 160px) }
-    table.sigma-matrix{ max-width: 100%; overflow:auto; display:block }
+  .node{
+    width: clamp(120px, 35vw, 160px)
   }
-
-  /* Visually hidden utility for captions/titles if needed */
-  .visually-hidden{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0 }
+  table.sigma-matrix{
+    max-width: 100%;
+    overflow:auto;
+    display:block
+  }
+}
+/* Visually hidden utility for captions/titles if needed */
+.visually-hidden{
+  position:absolute !important;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  white-space:nowrap;
+  border:0
+}
 </style>
 </head>
 <body>
-  <div class="page">
-    <h1 id="pageTitle" class="visually-hidden">Ukubona Pentad — Σ as Matrix</h1>
-
-    <div class="grid">
-      <!-- Pentad -->
-      <section class="card" role="region" aria-labelledby="h-pentad">
-        <h2 id="h-pentad">Ukubona Pentad</h2>
-        <figure class="pentad" role="figure" aria-labelledby="cap-pentad">
-          <div class="node n-theta"><b>θ</b><br>Parameters of <i>conflict</i><br><span class="muted">adversarial baseline</span></div>
-          <div class="node n-sigma"><b>Σ</b><br><span class="muted">Structure</span><br>Var = <i>cooperation (within)</i><br>Cov = <i>transaction (between)</i></div>
-          <div class="node n-ht"><b>h(t) ≡ Okukona</b><br>collision / play / shocks<br><span class="muted">synchronicity in time×space</span></div>
-          <div class="node n-ds"><b>ΔS</b><br>ledger of survival<br><span class="muted">scar / gap</span></div>
-          <div class="node n-tp"><b>θ′</b><br>Nietzschean update<br><span class="muted">Aeschylean writing</span></div>
-          <div class="arrow a1"></div>
-          <div class="arrow a2"></div>
-          <div class="arrow a3"></div>
-          <div class="arrow a4"></div>
-          <div class="arrow a5"></div>
-        </figure>
-        <figcaption id="cap-pentad" class="muted" style="margin-top:6px">
-          Σ distinguishes <b>within-agent cooperation</b> (variance; ordered signal-transduction vs entropy) from <b>between-agent transaction</b> (covariance).
-        </figcaption>
-
-        <div class="legend" aria-label="Legend">
-          <span><span class="sw sw-diag" aria-hidden="true"></span>diagonal (Var) = <b>cooperation</b> <span class="muted">within-agent</span></span>
-          <span><span class="sw sw-off" aria-hidden="true"></span>off-diagonal (Cov) = <b>transaction</b> <span class="muted">between-agents</span></span>
-        </div>
-      </section>
-
-      <!-- Sigma -->
-      <section class="card" role="region" aria-labelledby="h-sigma">
-        <h2 id="h-sigma">Σ as Matrix (cooperation within, transaction between)</h2>
-
-        <div class="sigma-wrap">
-          <table class="sigma-matrix mono" aria-describedby="sigma-cap">
-            <caption id="sigma-cap" class="visually-hidden">
-              Variance–covariance matrix, 5×5. Diagonal (variance) encodes within-agent cooperation; off-diagonals (covariance) encode between-agent transactions.
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col" aria-label="row/col label"></th>
-                <th scope="col">A</th>
-                <th scope="col">B</th>
-                <th scope="col">C</th>
-                <th scope="col">D</th>
-                <th scope="col">E</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">A</th>
-                <td class="cell diag" tabindex="0" data-tip="Var(A) — cooperation within A (ordered signal vs entropy)">σ<sub>AA</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(A,B) — transaction between A and B">σ<sub>AB</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(A,C) — transaction between A and C">σ<sub>AC</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(A,D) — transaction between A and D">σ<sub>AD</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(A,E) — transaction between A and E">σ<sub>AE</sub></td>
-              </tr>
-              <tr>
-                <th scope="row">B</th>
-                <td class="cell offd" tabindex="0" data-tip="Cov(B,A) — transaction between B and A">σ<sub>BA</sub></td>
-                <td class="cell diag" tabindex="0" data-tip="Var(B) — cooperation within B (ordered signal vs entropy)">σ<sub>BB</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(B,C) — transaction between B and C">σ<sub>BC</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(B,D) — transaction between B and D">σ<sub>BD</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(B,E) — transaction between B and E">σ<sub>BE</sub></td>
-              </tr>
-              <tr>
-                <th scope="row">C</th>
-                <td class="cell offd" tabindex="0" data-tip="Cov(C,A) — transaction between C and A">σ<sub>CA</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(C,B) — transaction between C and B">σ<sub>CB</sub></td>
-                <td class="cell diag" tabindex="0" data-tip="Var(C) — cooperation within C (ordered signal vs entropy)">σ<sub>CC</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(C,D) — transaction between C and D">σ<sub>CD</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(C,E) — transaction between C and E">σ<sub>CE</sub></td>
-              </tr>
-              <tr>
-                <th scope="row">D</th>
-                <td class="cell offd" tabindex="0" data-tip="Cov(D,A) — transaction between D and A">σ<sub>DA</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(D,B) — transaction between D and B">σ<sub>DB</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(D,C) — transaction between D and C">σ<sub>DC</sub></td>
-                <td class="cell diag" tabindex="0" data-tip="Var(D) — cooperation within D (ordered signal vs entropy)">σ<sub>DD</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(D,E) — transaction between D and E">σ<sub>DE</sub></td>
-              </tr>
-              <tr>
-                <th scope="row">E</th>
-                <td class="cell offd" tabindex="0" data-tip="Cov(E,A) — transaction between E and A">σ<sub>EA</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(E,B) — transaction between E and B">σ<sub>EB</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(E,C) — transaction between E and C">σ<sub>EC</sub></td>
-                <td class="cell offd" tabindex="0" data-tip="Cov(E,D) — transaction between E and D">σ<sub>ED</sub></td>
-                <td class="cell diag" tabindex="0" data-tip="Var(E) — cooperation within E (ordered signal vs entropy)">σ<sub>EE</sub></td>
-              </tr>
-            </tbody>
-          </table>
-
-          <p class="sigma-notes">
-            <b>Canon:</b> Diagonal (<b>Var</b>) marks <i>cooperation within an agent</i>—ordered signal-transduction that improbably maintains order against physics (Schrödinger’s “negentropy”). Off-diagonals (<b>Cov</b>) mark <i>transactions between agents</i>—synchronies that arise at interfaces. Collisions at <b>h(t)</b> stress Σ; the observed <b>ΔS</b> is what gets written into <b>θ′</b>.
-          </p>
-          <p class="tip">Tip: rename A–E to concrete agents (e.g., Donor, Nondonor, Provider, Payer, Regulator) or subsystems within one organism if you’re modeling intra-agent structure.</p>
-        </div>
-      </section>
-    </div>
-  </div>
+<div class="page">
+<h1 id="pageTitle" class="visually-hidden">Ukubona Pentad — Σ as Matrix</h1>
+<div class="grid">
+<!-- Pentad -->
+<section class="card" role="region" aria-labelledby="h-pentad">
+<h2 id="h-pentad">Ukubona Pentad</h2>
+<figure class="pentad" role="figure" aria-labelledby="cap-pentad">
+<div class="node n-theta"><b>θ</b><br>Parameters of <i>conflict</i><br><span class="muted">adversarial baseline<br>(afferent dendrite)</span></div>
+<div class="node n-sigma"><b>Σ</b><br><span class="muted">Structure<br>(afferent dendrite)</span><br>Var = <i>cooperation (within)</i><br>Cov = <i>transaction (between)</i></div>
+<div class="node n-ht"><b>h(t) ≡ Okukona</b><br>collision / play / shocks<br><span class="muted">synchronicity in time×space<br>(afferent dendrite)</span></div>
+<div class="node n-ds"><b>ΔS</b><br><span class="muted">Soma</span><br>ledger of survival<br><span class="muted">scar / gap</span></div>
+<div class="node n-tp"><b>θ′</b><br><span class="muted">Axon</span><br>Nietzschean update<br><span class="muted">Aeschylean writing</span></div>
+<div class="arrow spoke-up"></div>
+<div class="arrow spoke-right"></div>
+<div class="arrow spoke-down"></div>
+<div class="arrow spoke-left"></div>
+<div class="arrow feedback"></div>
+</figure>
+<figcaption id="cap-pentad" class="muted" style="margin-top:6px">
+Σ distinguishes <b>within-agent cooperation</b> (variance; ordered signal-transduction vs entropy) from <b>between-agent transaction</b> (covariance). O'Clock config: ΔS (Soma) at center → θ′ (Axon) at 3; afferents at 6(θ), 9(Σ), 12(h(t)); dotted arc 3→6 as feedback/recursion (dendrites don't touch soma—synaptic cleft).
+</figcaption>
+<div class="legend" aria-label="Legend">
+<span><span class="sw sw-diag" aria-hidden="true"></span>diagonal (Var) = <b>cooperation</b> <span class="muted">within-agent</span></span>
+<span><span class="sw sw-off" aria-hidden="true"></span>off-diagonal (Cov) = <b>transaction</b> <span class="muted">between-agents</span></span>
+<span><span class="sw" style="background:var(--line);border-style:dashed" aria-hidden="true"></span>dotted = <b>feedback/recursion</b> <span class="muted">(3→6)</span></span>
+</div>
+</section>
+<!-- Sigma -->
+<section class="card" role="region" aria-labelledby="h-sigma">
+<h2 id="h-sigma">Σ as Matrix (cooperation within, transaction between)</h2>
+<div class="sigma-wrap">
+<table class="sigma-matrix mono" aria-describedby="sigma-cap">
+<caption id="sigma-cap" class="visually-hidden">
+Variance–covariance matrix, 5×5. Diagonal (variance) encodes within-agent cooperation; off-diagonals (covariance) encode between-agent transactions.
+</caption>
+<thead>
+<tr>
+<th scope="col" aria-label="row/col label"></th>
+<th scope="col">A</th>
+<th scope="col">B</th>
+<th scope="col">C</th>
+<th scope="col">D</th>
+<th scope="col">E</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">A</th>
+<td class="cell diag" tabindex="0" data-tip="Var(A) — cooperation within A (ordered signal vs entropy)">σ<sub>AA</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(A,B) — transaction between A and B">σ<sub>AB</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(A,C) — transaction between A and C">σ<sub>AC</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(A,D) — transaction between A and D">σ<sub>AD</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(A,E) — transaction between A and E">σ<sub>AE</sub></td>
+</tr>
+<tr>
+<th scope="row">B</th>
+<td class="cell offd" tabindex="0" data-tip="Cov(B,A) — transaction between B and A">σ<sub>BA</sub></td>
+<td class="cell diag" tabindex="0" data-tip="Var(B) — cooperation within B (ordered signal vs entropy)">σ<sub>BB</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(B,C) — transaction between B and C">σ<sub>BC</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(B,D) — transaction between B and D">σ<sub>BD</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(B,E) — transaction between B and E">σ<sub>BE</sub></td>
+</tr>
+<tr>
+<th scope="row">C</th>
+<td class="cell offd" tabindex="0" data-tip="Cov(C,A) — transaction between C and A">σ<sub>CA</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(C,B) — transaction between C and B">σ<sub>CB</sub></td>
+<td class="cell diag" tabindex="0" data-tip="Var(C) — cooperation within C (ordered signal vs entropy)">σ<sub>CC</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(C,D) — transaction between C and D">σ<sub>CD</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(C,E) — transaction between C and E">σ<sub>CE</sub></td>
+</tr>
+<tr>
+<th scope="row">D</th>
+<td class="cell offd" tabindex="0" data-tip="Cov(D,A) — transaction between D and A">σ<sub>DA</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(D,B) — transaction between D and B">σ<sub>DB</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(D,C) — transaction between D and C">σ<sub>DC</sub></td>
+<td class="cell diag" tabindex="0" data-tip="Var(D) — cooperation within D (ordered signal vs entropy)">σ<sub>DD</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(D,E) — transaction between D and E">σ<sub>DE</sub></td>
+</tr>
+<tr>
+<th scope="row">E</th>
+<td class="cell offd" tabindex="0" data-tip="Cov(E,A) — transaction between E and A">σ<sub>EA</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(E,B) — transaction between E and B">σ<sub>EB</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(E,C) — transaction between E and C">σ<sub>EC</sub></td>
+<td class="cell offd" tabindex="0" data-tip="Cov(E,D) — transaction between E and D">σ<sub>ED</sub></td>
+<td class="cell diag" tabindex="0" data-tip="Var(E) — cooperation within E (ordered signal vs entropy)">σ<sub>EE</sub></td>
+</tr>
+</tbody>
+</table>
+<p class="sigma-notes">
+<b>Canon:</b> Diagonal (<b>Var</b>) marks <i>cooperation within an agent</i>—ordered signal-transduction that improbably maintains order against physics (Schrödinger’s “negentropy”). Off-diagonals (<b>Cov</b>) mark <i>transactions between agents</i>—synchronies that arise at interfaces. Collisions at <b>h(t)</b> stress Σ; the observed <b>ΔS</b> is what gets written into <b>θ′</b>.
+</p>
+<p class="tip">Tip: rename A–E to concrete agents (e.g., Donor, Nondonor, Provider, Payer, Regulator) or subsystems within one organism if you’re modeling intra-agent structure.</p>
+</div>
+</section>
+</div>
+</div>
 </body>
 </html>
